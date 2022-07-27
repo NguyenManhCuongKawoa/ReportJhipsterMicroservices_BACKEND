@@ -47,9 +47,9 @@ spring:
       # it can be set to any label, branch or commit of the configuration source Git repository
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://localhost:3306/backendsocial?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
+    url: jdbc:mysql://localhost:3306/reportsocial?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=True
     username: root
-    password:
+    password: 1234
     hikari:
       poolName: Hikari
       auto-commit: false
@@ -59,9 +59,14 @@ spring:
         prepStmtCacheSqlLimit: 2048
         useServerPrepStmts: true
   jpa:
+    elasticsearch:
+      rest:
+        uris: http://localhost:9200
+        suffix: _search?pretty
   liquibase:
     # Remove 'faker' if you do not want the sample data to be loaded automatically
     contexts: dev, faker
+
   messages:
     cache-duration: PT1S # 1 second, see the ISO 8601 standard
   thymeleaf:
@@ -75,6 +80,16 @@ spring:
     locator:
       discovery:
         enabled: true
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group.id: babyboy-group
+      auto.offset.reset: earliest
+    producer:
+      key.serializer: org.apache.kafka.common.serialization.StringSerializer
+      value.serializer: org.apache.kafka.common.serialization.StringSerializer
 
 server:
   port: 8001
@@ -122,3 +137,4 @@ jhipster:
 # ===================================================================
 
 # application:
+
