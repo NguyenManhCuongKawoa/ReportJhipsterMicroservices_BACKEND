@@ -19,13 +19,6 @@ public interface PostService {
      */
     Post save(Post post);
 
-    /**
-     * Partially updates a post.
-     *
-     * @param post the entity to update partially.
-     * @return the persisted entity.
-     */
-    Optional<Post> partialUpdate(Post post);
 
     /**
      * Get all the posts.
@@ -50,19 +43,8 @@ public interface PostService {
      */
     void delete(Long id);
 
-    Post ChangeModePost(Long id, Integer mode);
 
     PostResponse savePost(PostDto postDto);
-    void savePostSearch(PostDto postDto);
-
-    /**
-     * Search for the post corresponding to the query.
-     *
-     * @param query the query of the search.
-     * @param pageable the pagination information.
-     * @return the list of entities.
-     */
-    Page<PostDto> search(String query, Pageable pageable);
 
     void incrementTotalEmotionBy(Long postId, Integer num);
 }

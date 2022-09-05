@@ -3,12 +3,10 @@ package com.babyboy.social.dto;
 import java.time.LocalDate;
 import java.util.List;
 import javax.validation.constraints.NotNull;
-import org.springframework.data.elasticsearch.annotations.FieldType;
 
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "postdto")
+
 public class PostDto {
 
-    @org.springframework.data.elasticsearch.annotations.Field(type = FieldType.Integer)
     private Long id;
 
     private String title;

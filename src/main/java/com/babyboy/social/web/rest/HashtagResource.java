@@ -16,8 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.config.TopicBuilder;
-import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.ResponseUtil;
@@ -39,9 +37,6 @@ public class HashtagResource {
     private final HashtagService hashtagService;
 
     private final HashtagRepository hashtagRepository;
-
-    @Autowired
-    private KafkaAdmin kafkaAdmin;
 
     public HashtagResource(HashtagService hashtagService, HashtagRepository hashtagRepository) {
         this.hashtagService = hashtagService;

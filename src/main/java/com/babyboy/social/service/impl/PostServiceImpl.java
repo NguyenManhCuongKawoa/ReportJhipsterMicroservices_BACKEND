@@ -10,7 +10,6 @@ import com.babyboy.social.repository.HashtagRepository;
 import com.babyboy.social.repository.PostHashtagRepository;
 import com.babyboy.social.repository.PostImageRepository;
 import com.babyboy.social.repository.PostRepository;
-import com.babyboy.social.repository.search.PostSearchRepository;
 import com.babyboy.social.service.PostService;
 import com.github.dockerjava.api.exception.NotFoundException;
 import java.util.ArrayList;
@@ -24,7 +23,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.HttpClientErrorException;
 
 /**
  * Service Implementation for managing {@link Post}.
@@ -36,9 +34,6 @@ public class PostServiceImpl implements PostService {
     private final Logger log = LoggerFactory.getLogger(PostServiceImpl.class);
 
     private final PostRepository postRepository;
-
-    @Autowired
-    private PostSearchRepository postSearchRepository;
 
     @Autowired
     private HashtagRepository hashtagRepository;
@@ -59,20 +54,6 @@ public class PostServiceImpl implements PostService {
         return postRepository.save(post);
     }
 
-    @Override
-    public Post ChangeModePost(Long id, Integer mode) {
-        Optional<Post> oldPost = postRepository.findById(id);
-        Optional<PostDto> oldPostDto = postSearchRepository.findById(id);
-        if (oldPost.isPresent() && oldPostDto.isPresent()) {
-            Post post = oldPost.get();
-            post.setMode(mode);
-            PostDto postDto = oldPostDto.get();
-            postDto.setMode(mode);
-            postSearchRepository.save(postDto);
-            return postRepository.save(post);
-        }
-        return null;
-    }
 
     @Override
     public PostResponse savePost(PostDto postDto) {
@@ -132,79 +113,6 @@ public class PostServiceImpl implements PostService {
         return postResponse;
     }
 
-    @Override
-    public void savePostSearch(PostDto postDto) {
-        log.debug("Request to save postDto : {}", postDto);
-        postSearchRepository.save(postDto);
-    }
-
-    @Override
-    public Optional<Post> partialUpdate(Post post) {
-        log.debug("Request to partially update Post : {}", post);
-        postSearchRepository
-            .findById(post.getId())
-            .map(existingPost -> {
-                if (post.getTitle() != null) {
-                    existingPost.setTitle(post.getTitle());
-                }
-                if (post.getDescription() != null) {
-                    existingPost.setDescription(post.getDescription());
-                }
-                if (post.getContent() != null) {
-                    existingPost.setContent(post.getContent());
-                }
-                if (post.getTotalEmotion() != null) {
-                    existingPost.setTotalEmotion(post.getTotalEmotion());
-                }
-                if (post.getTotalShare() != null) {
-                    existingPost.setTotalShare(post.getTotalShare());
-                }
-                if (post.getCreatedAt() != null) {
-                    existingPost.setCreatedAt(post.getCreatedAt());
-                }
-                if (post.getUpdatedAt() != null) {
-                    existingPost.setUpdatedAt(post.getUpdatedAt());
-                }
-                if (post.getUserId() != null) {
-                    existingPost.setUserId(post.getUserId());
-                }
-
-                return existingPost;
-            })
-            .map(postSearchRepository::save);
-
-        return postRepository
-            .findById(post.getId())
-            .map(existingPost -> {
-                if (post.getTitle() != null) {
-                    existingPost.setTitle(post.getTitle());
-                }
-                if (post.getDescription() != null) {
-                    existingPost.setDescription(post.getDescription());
-                }
-                if (post.getContent() != null) {
-                    existingPost.setContent(post.getContent());
-                }
-                if (post.getTotalEmotion() != null) {
-                    existingPost.setTotalEmotion(post.getTotalEmotion());
-                }
-                if (post.getTotalShare() != null) {
-                    existingPost.setTotalShare(post.getTotalShare());
-                }
-                if (post.getCreatedAt() != null) {
-                    existingPost.setCreatedAt(post.getCreatedAt());
-                }
-                if (post.getUpdatedAt() != null) {
-                    existingPost.setUpdatedAt(post.getUpdatedAt());
-                }
-                if (post.getUserId() != null) {
-                    existingPost.setUserId(post.getUserId());
-                }
-
-                return existingPost;
-            })
-            .map(postRepository::save);
-    }
 
     @Override
     @Transactional(readOnly = true)
@@ -224,14 +132,8 @@ public class PostServiceImpl implements PostService {
     public void delete(Long id) {
         log.debug("Request to delete Post : {}", id);
         postRepository.deleteById(id);
-        postSearchRepository.deleteById(id);
     }
 
-    @Transactional(readOnly = true)
-    public Page<PostDto> search(String query, Pageable pageable) {
-        log.debug("Request to search for a page of Posts for query {}", query);
-        return postSearchRepository.search(query, pageable);
-    }
 
     @Override
     public void incrementTotalEmotionBy(Long postId, Integer num) {

@@ -4,7 +4,6 @@ import com.babyboy.social.domain.Hashtag;
 import java.time.LocalDate;
 import java.util.List;
 import javax.validation.constraints.NotNull;
-import org.springframework.data.elasticsearch.annotations.FieldType;
 
 public class PostResponse {
 

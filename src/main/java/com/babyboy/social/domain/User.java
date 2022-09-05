@@ -6,14 +6,12 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import javax.persistence.*;
 import javax.validation.constraints.*;
-import org.springframework.data.elasticsearch.annotations.FieldType;
 
 /**
  * A JUser.
  */
 @Entity
 @Table(name = "user")
-//@org.springframework.data.elasticsearch.annotations.Document(indexName = "user")
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;

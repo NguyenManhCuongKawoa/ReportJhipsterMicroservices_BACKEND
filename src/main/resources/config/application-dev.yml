@@ -58,11 +58,7 @@ spring:
         prepStmtCacheSize: 250
         prepStmtCacheSqlLimit: 2048
         useServerPrepStmts: true
-  jpa:
-    elasticsearch:
-      rest:
-        uris: http://localhost:9200
-        suffix: _search?pretty
+
   liquibase:
     # Remove 'faker' if you do not want the sample data to be loaded automatically
     contexts: dev, faker
@@ -80,16 +76,6 @@ spring:
     locator:
       discovery:
         enabled: true
-  kafka:
-    bootstrap-servers: localhost:9092
-    consumer:
-      key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value.deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      group.id: babyboy-group
-      auto.offset.reset: earliest
-    producer:
-      key.serializer: org.apache.kafka.common.serialization.StringSerializer
-      value.serializer: org.apache.kafka.common.serialization.StringSerializer
 
 server:
   port: 8001

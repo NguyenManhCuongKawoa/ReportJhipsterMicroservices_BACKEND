@@ -5,7 +5,6 @@ import com.babyboy.social.domain.User;
 import com.babyboy.social.domain.UserReport;
 import com.babyboy.social.repository.UserRepository;
 import com.babyboy.social.service.UserService;
-import com.babyboy.social.service.kafka.ProducerKafkaService;
 import com.babyboy.social.web.rest.errors.BadRequestAlertException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,8 +42,6 @@ public class UserResource {
 
     private final UserRepository userRepository;
 
-    @Autowired
-    private ProducerKafkaService producerKafkaService;
 
     public UserResource(UserService userService, UserRepository userRepository) {
         this.userService = userService;
@@ -179,18 +176,4 @@ public class UserResource {
             .build();
     }
 
-    @PostMapping("users/report")
-    ResponseEntity<?> userReport(@RequestBody UserReport userReport) {
-        log.info("User Report Info : {}", userReport);
-
-        // TODO: Send message to topic "report_user"
-        try {
-            producerKafkaService.publish(Constants.TOPIC_USER_REPORT, new ObjectMapper().writeValueAsString(userReport));
-
-            return ResponseEntity.ok().body(userReport);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("Error when report!!!");
-        }
-    }
 }
