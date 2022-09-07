@@ -5,9 +5,11 @@ import com.babyboy.social.dto.PostDto;
 import com.babyboy.social.dto.response.PostResponse;
 import com.babyboy.social.repository.PostRepository;
 import com.babyboy.social.service.PostService;
+import com.babyboy.social.service.UserService;
 import com.babyboy.social.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -15,6 +17,7 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +47,9 @@ public class PostResource {
 
     private final PostRepository postRepository;
 
+    @Autowired
+    private UserService userService;
+
     public PostResource(PostService postService, PostRepository postRepository) {
         this.postService = postService;
         this.postRepository = postRepository;
@@ -51,11 +57,17 @@ public class PostResource {
 
 
     @PostMapping("/posts")
-    public ResponseEntity<PostResponse> createPost(@Valid @RequestBody PostDto postDto) throws URISyntaxException {
+    public ResponseEntity<PostResponse> createPost(@Valid @RequestBody PostDto postDto, Principal principal) throws URISyntaxException {
         log.debug("REST request to save Post : {}", postDto);
         if (postDto.getId() != null) {
             throw new BadRequestAlertException("A new post cannot already have an ID", ENTITY_NAME, "idexists");
         }
+
+        String userId = principal.getName();
+        if(userId == null) {
+            throw new BadRequestAlertException("User is not exist",ENTITY_NAME, "User is not exist");
+        }
+        postDto.setUserId(userId);
 
         PostResponse result = postService.savePost(postDto);
         postDto.setCreatedAt(result.getCreatedAt());

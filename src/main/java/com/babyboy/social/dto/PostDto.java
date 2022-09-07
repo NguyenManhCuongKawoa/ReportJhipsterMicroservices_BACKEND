@@ -21,8 +21,7 @@ public class PostDto {
     private LocalDate createdAt;
     private LocalDate updatedAt;
 
-    @NotNull
-    private Long userId;
+    private String userId;
 
     private List<Long> hashtagIds;
     private List<String> images;
@@ -99,11 +98,11 @@ public class PostDto {
         this.updatedAt = updatedAt;
     }
 
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

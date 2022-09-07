@@ -79,7 +79,7 @@ public class UserResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/users/{id}")
-    public ResponseEntity<User> updateJUser(@PathVariable(value = "id", required = false) final Long id, @Valid @RequestBody User user)
+    public ResponseEntity<User> updateJUser(@PathVariable(value = "id", required = false) final String id, @Valid @RequestBody User user)
         throws URISyntaxException {
         log.debug("REST request to update JUser : {}, {}", id, user);
         if (user.getId() == null) {
@@ -113,7 +113,7 @@ public class UserResource {
      */
     @PatchMapping(value = "/users/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<User> partialUpdateJUser(
-        @PathVariable(value = "id", required = false) final Long id,
+        @PathVariable(value = "id", required = false) final String id,
         @NotNull @RequestBody User user
     ) throws URISyntaxException {
         log.debug("REST request to partial update JUser partially : {}, {}", id, user);
@@ -154,7 +154,7 @@ public class UserResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the jUser, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/users/{id}")
-    public ResponseEntity<User> getJUser(@PathVariable Long id) {
+    public ResponseEntity<User> getJUser(@PathVariable String id) {
         log.debug("REST request to get JUser : {}", id);
         Optional<User> jUser = userService.findOne(id);
         return ResponseUtil.wrapOrNotFound(jUser);
@@ -167,7 +167,7 @@ public class UserResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<Void> deleteJUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteJUser(@PathVariable String id) {
         log.debug("REST request to delete JUser : {}", id);
         userService.delete(id);
         return ResponseEntity

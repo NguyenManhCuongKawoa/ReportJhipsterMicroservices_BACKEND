@@ -1,6 +1,8 @@
 package com.babyboy.social.service;
 
 import com.babyboy.social.domain.User;
+
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,12 +39,13 @@ public interface UserService {
      * @param id the id of the entity.
      * @return the entity.
      */
-    Optional<User> findOne(Long id);
+    Optional<User> findOne(String id);
 
     /**
      * Delete the "id" jUser.
      *
      * @param id the id of the entity.
      */
-    void delete(Long id);
+    void delete(String id);
+
 }

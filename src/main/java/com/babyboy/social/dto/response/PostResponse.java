@@ -21,7 +21,7 @@ public class PostResponse {
     private LocalDate updatedAt;
 
     @NotNull
-    private Long userId;
+    private String userId;
 
     private List<Hashtag> hashtags;
     private List<String> images;
@@ -98,11 +98,11 @@ public class PostResponse {
         this.updatedAt = updatedAt;
     }
 
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

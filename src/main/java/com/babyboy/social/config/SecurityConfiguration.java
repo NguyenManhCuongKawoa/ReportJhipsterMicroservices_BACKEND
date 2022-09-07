@@ -93,8 +93,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .antMatchers("/management/prometheus").permitAll()
             .antMatchers("/management/**").hasAuthority(AuthoritiesConstants.ADMIN)
         .and()
-            .oauth2Login()
-            .and()
             .oauth2ResourceServer()
             .jwt()
             .jwtAuthenticationConverter(authenticationConverter())

@@ -256,3 +256,5 @@ jhipster:
 # ===================================================================
 
 # application:
+keycloak:
+  baseurl: http://localhost:8080

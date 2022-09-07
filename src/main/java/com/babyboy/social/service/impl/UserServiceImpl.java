@@ -2,11 +2,21 @@ package com.babyboy.social.service.impl;
 
 import com.babyboy.social.domain.User;
 import com.babyboy.social.repository.UserRepository;
+import com.babyboy.social.security.SecurityUtils;
 import com.babyboy.social.service.UserService;
+
+import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,9 +51,6 @@ public class UserServiceImpl implements UserService {
                 if (user.getLogin() != null) {
                     existingJUser.setLogin(user.getLogin());
                 }
-                if (user.getPassword() != null) {
-                    existingJUser.setPassword(user.getPassword());
-                }
                 if (user.getFirstName() != null) {
                     existingJUser.setFirstName(user.getFirstName());
                 }
@@ -56,17 +63,8 @@ public class UserServiceImpl implements UserService {
                 if (user.getImageUrl() != null) {
                     existingJUser.setImageUrl(user.getImageUrl());
                 }
-                if (user.getActivated() != null) {
-                    existingJUser.setActivated(user.getActivated());
-                }
                 if (user.getLangKey() != null) {
                     existingJUser.setLangKey(user.getLangKey());
-                }
-                if (user.getActivationKey() != null) {
-                    existingJUser.setActivationKey(user.getActivationKey());
-                }
-                if (user.getResetKey() != null) {
-                    existingJUser.setResetKey(user.getResetKey());
                 }
                 if (user.getCreatedBy() != null) {
                     existingJUser.setCreatedBy(user.getCreatedBy());
@@ -74,9 +72,7 @@ public class UserServiceImpl implements UserService {
                 if (user.getCreatedDate() != null) {
                     existingJUser.setCreatedDate(user.getCreatedDate());
                 }
-                if (user.getResetDate() != null) {
-                    existingJUser.setResetDate(user.getResetDate());
-                }
+
                 if (user.getLastModifiedBy() != null) {
                     existingJUser.setLastModifiedBy(user.getLastModifiedBy());
                 }
@@ -98,14 +94,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<User> findOne(Long id) {
+    public Optional<User> findOne(String id) {
         log.debug("Request to get JUser : {}", id);
         return userRepository.findById(id);
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(String id) {
         log.debug("Request to delete JUser : {}", id);
         userRepository.deleteById(id);
     }
+
+
+
 }
