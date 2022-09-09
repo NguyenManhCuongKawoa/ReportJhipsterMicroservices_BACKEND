@@ -12,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 
 @RestController
@@ -24,12 +23,11 @@ public class KeycloakAPIResource {
 
     private final Logger log = LoggerFactory.getLogger(KeycloakAPIResource.class);
 
-    @GetMapping("keycloak/users/realm")
-    public ResponseEntity<Page<User>> getAllUser(@PathVariable String realm, Pageable pageable) {
+    @GetMapping("keycloak/users/realm/{realm}")
+    public ResponseEntity<?> getAllUser(@PathVariable String realm, Pageable pageable) {
         log.debug("Request get all user user keycloak api");
 
-        Page<User> users = keycloakService.getUsers(realm, pageable);
-        return ResponseEntity.ok(users);
+        return keycloakService.getUsers(realm, pageable);
     }
 
     @PostMapping("keycloak/users/realm")
@@ -61,11 +59,11 @@ public class KeycloakAPIResource {
         return responseEntity;
     }
 
-    @PostMapping("keycloak/roles/realm")
-    public ResponseEntity<?> createRole(@RequestBody RoleKeycloakRequest roleKeycloakRequest) {
+    @PostMapping("keycloak/roles/realm/{realm}")
+    public ResponseEntity<?> createRole(@PathVariable String realm, @RequestBody RoleKeycloakRequest roleKeycloakRequest) {
         log.debug("Request create Role using keycloak api");
 
-        ResponseEntity<?> responseEntity = keycloakService.createRole(roleKeycloakRequest);
+        ResponseEntity<?> responseEntity = keycloakService.createRole(realm, roleKeycloakRequest);
         return responseEntity;
     }
 }

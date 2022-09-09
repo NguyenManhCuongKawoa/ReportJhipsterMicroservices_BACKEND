@@ -1,20 +1,21 @@
 package com.babyboy.social.service;
 
-import com.babyboy.social.domain.User;
+import com.babyboy.social.dto.UserChangeaPassKeycloak;
 import com.babyboy.social.dto.request.RoleKeycloakRequest;
 import com.babyboy.social.dto.request.UserKeycloakRequest;
 import com.babyboy.social.dto.request.UserPasswKeycloakRequest;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
+import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
-import java.util.List;
 
 @Service
 public class KeycloakService {
@@ -23,63 +24,70 @@ public class KeycloakService {
     private String baseUrl;
     private final RestTemplate restTemplate;
 
+    private final BearerTokenResolver bearerTokenResolver = new DefaultBearerTokenResolver();
+
+
     KeycloakService(RestTemplateBuilder restTemplateBuilder) {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-    public Page<User> getUsers(String realm, Pageable pageable) {
+    public  ResponseEntity<?> getUsers(String realm, Pageable pageable) {
+
+        String token = bearerTokenResolver.resolve(
+            ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()
+        );
+
         String surfixUrl = "/admin/realms/" + realm + "/users";
-        String token = "";
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + token);
-        HttpEntity<Object> request = new HttpEntity<>(headers);
 
-        List<User> response = (List<User>) restTemplate.exchange(
-            baseUrl + surfixUrl, HttpMethod.GET, request, Object.class);
-        return new PageImpl<>(response, pageable, response.size());
+        ResponseEntity<?> response = ( ResponseEntity<?>) restTemplate.exchange(
+            baseUrl + surfixUrl, HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+        return response;
     }
 
     public ResponseEntity<?> createUser(String realm, UserKeycloakRequest userKeycloakRequest) {
+        String token = bearerTokenResolver.resolve(
+            ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()
+        );
+
         String surfixUrl = "/admin/realms/" + realm + "/users";
-        String token = "";
         HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + token);
 
-        JSONObject object = new JSONObject();
-        object.put("username", userKeycloakRequest.getUsername());
-        object.put("enabled", userKeycloakRequest.getEnabled());
-        object.put("emailVerified", userKeycloakRequest.getEmailVerified());
-        object.put("firstName", userKeycloakRequest.getFirstName());
-        object.put("lastName", userKeycloakRequest.getLastName());
-        object.put("email", userKeycloakRequest.getEmail());
-        HttpEntity<Object> request = new HttpEntity<>(headers);
+        HttpEntity<Object> request = new HttpEntity<>(userKeycloakRequest, headers);
 
-        ResponseEntity<?> response = ( ResponseEntity<?>) restTemplate.exchange(
-            baseUrl + surfixUrl, HttpMethod.POST, request, Object.class);
+        ResponseEntity<?> response = ( ResponseEntity<?>) restTemplate.postForObject(
+            baseUrl + surfixUrl, request, Object.class);
         return response;
     }
 
     public ResponseEntity<?> changeUserPassword(UserPasswKeycloakRequest userPassKeycloakRequest) {
+        String token = bearerTokenResolver.resolve(
+            ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()
+        );
+
         String surfixUrl = "/admin/realms/" + userPassKeycloakRequest.getRealm() + "/users/" +
             userPassKeycloakRequest.getUserId() + "/reset-password";
-        String token = "";
         HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + token);
 
-        JSONObject object = new JSONObject();
-        object.put("type", "password");
-        object.put("value", userPassKeycloakRequest.getPassword());
-        object.put("temporary", true);
-        HttpEntity<Object> request = new HttpEntity<>(headers);
 
-        ResponseEntity<?> response = ( ResponseEntity<?>) restTemplate.exchange(
+        HttpEntity<Object> request = new HttpEntity<>(new UserChangeaPassKeycloak(userPassKeycloakRequest.getPassword()), headers);
+
+        ResponseEntity<?> response = ( ResponseEntity<?> ) restTemplate.exchange(
             baseUrl + surfixUrl, HttpMethod.PUT, request, Object.class);
         return response;
     }
 
     public ResponseEntity<?> getAllRoleOfRealm(String realm) {
+        String token = bearerTokenResolver.resolve(
+            ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()
+        );
+
         String surfixUrl = "/admin/realms/" + realm + "/roles";
-        String token = "";
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + token);
 
@@ -89,18 +97,19 @@ public class KeycloakService {
             baseUrl + surfixUrl, HttpMethod.GET, request, Object.class);
         return response;
     }
-    public ResponseEntity<?> createRole(RoleKeycloakRequest roleKeycloakRequest) {
-        String surfixUrl = "/admin/realms/" + roleKeycloakRequest.getRealm() + "/roles";
-        String token = "";
+    public ResponseEntity<?> createRole(String realm, RoleKeycloakRequest roleKeycloakRequest) {
+        String token = bearerTokenResolver.resolve(
+            ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()
+        );
+
+        String surfixUrl = "/admin/realms/" + realm + "/roles";
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + token);
 
-        JSONObject object = new JSONObject();
-        object.put("name", roleKeycloakRequest.getName());
-        HttpEntity<Object> request = new HttpEntity<>(headers);
+        HttpEntity<Object> request = new HttpEntity<>(roleKeycloakRequest, headers);
 
-        ResponseEntity<?> response = ( ResponseEntity<?>) restTemplate.exchange(
-            baseUrl + surfixUrl, HttpMethod.POST, request, Object.class);
+        ResponseEntity<?> response = ( ResponseEntity<?>) restTemplate.postForObject(
+            baseUrl + surfixUrl, request, Object.class);
         return response;
     }
 
